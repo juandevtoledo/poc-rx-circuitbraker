@@ -1,0 +1,58 @@
+plugins {
+	id 'org.springframework.boot' version '2.4.5'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+}
+
+group = 'com.poc.lulo'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+ext {
+	set('springCloudVersion', "2020.0.2")
+	set('jfrogUser', System.getenv('JFROG_USER'))
+	set('jfrogPassword', System.getenv('JFROG_PASSWORD'))
+	set('jfrogContextUrl', System.getenv('JFROG_CONTEXT_URL'))
+	resilience4jVersion = '1.7.0'
+}
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+	maven {
+		url "https://piso19.jfrog.io/piso19/libs-release"
+		credentials {
+			username = "$jfrogUser"
+			password = "$jfrogPassword"
+		}
+	}
+	maven {
+		url "https://piso19.jfrog.io/piso19/libs-snapshot"
+		credentials {
+			username = "$jfrogUser"
+			password = "$jfrogPassword"
+		}
+	}
+}
+
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'com.lulobank:lulobank-flexmiddleware-sdk:1.0.120'
+	implementation 'io.github.resilience4j:resilience4j-spring-boot2:1.7.0'
+	implementation 'io.github.resilience4j:resilience4j-all:1.7.0'
+	compile "io.github.resilience4j:resilience4j-reactor:${resilience4jVersion}"
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'io.projectreactor:reactor-test'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+
+test {
+	useJUnitPlatform()
+}
